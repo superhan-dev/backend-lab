@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: coupon-campain
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: shhan
+    password: shhan
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
