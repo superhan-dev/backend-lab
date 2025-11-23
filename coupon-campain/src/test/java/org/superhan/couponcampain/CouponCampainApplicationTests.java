@@ -1,0 +1,13 @@
+package org.superhan.couponcampain;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class CouponCampainApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
