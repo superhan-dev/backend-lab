@@ -1,1 +1,4 @@
-.idea
+### intellij ###
+.idea/
+.vscode/
+.DS_Store
