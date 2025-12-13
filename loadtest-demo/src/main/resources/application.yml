@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/loadtest_demo
-    username: loadtest_demo
-    password: loadtest_demo
+    username: shhan
+    password: shhan
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
