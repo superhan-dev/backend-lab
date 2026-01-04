@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: otlp-demo
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0  # 100% sampling for development
+  otlp:
+    metrics:
+      export:
+        url: http://localhost:4318/v1/metrics
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/traces
+    logging:
+      export:
+        otlp:
+          endpoint: http://localhost:4318/v1/logs
+
+server:
+  shutdown: immediate
+logging:
+  level:
+    root: INFO
+    org.springframework.boot.docker.compose: DEBUG
+    org.springframework.boot.actuator.autoconfigure.opentelemetry: DEBUG
