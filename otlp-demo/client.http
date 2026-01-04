@@ -6,3 +6,9 @@ GET http://localhost:8080/greet/World
 
 ### Slow operation (500ms)
 GET http://localhost:8080/slow
+
+### Kafka - Send simple message
+POST http://localhost:8080/kafka/send?message=Hello Kafka!!!!
+
+### Kafka - Send message with key
+POST http://localhost:8080/kafka/send-with-key?key=test-key&message=Hello with key!
