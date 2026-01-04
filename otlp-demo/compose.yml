@@ -5,11 +5,58 @@ services:
       - '3000:3000'
       - '4317:4317'
       - '4318:4318'
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources/prometheus.yml:/etc/grafana/provisioning/datasources/prometheus.yml
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  grafana-init:
+    image: curlimages/curl:latest
+    depends_on:
+      grafana-lgtm:
+        condition: service_healthy
+    volumes:
+      - ./monitoring/grafana/dashboards:/dashboards
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Adding Prometheus-Kafka datasource..."
+        curl -u admin:admin -X POST -H "Content-Type: application/json" \
+          -d '{"name":"Prometheus-Kafka","type":"prometheus","url":"http://prometheus:9090","access":"proxy","isDefault":false}' \
+          http://grafana-lgtm:3000/api/datasources
+
+        echo "Importing Kafka dashboard..."
+        curl -u admin:admin -X POST -H "Content-Type: application/json" \
+          -d "{\"dashboard\": $$(cat /dashboards/kafka-dashboard.json), \"overwrite\": true}" \
+          http://grafana-lgtm:3000/api/dashboards/db
+
+        echo "Grafana init completed!"
+
+  prometheus:
+    image: 'prom/prometheus:latest'
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   kafka:
-    image: 'apache/kafka:latest'
+    build:
+      context: ./monitoring
+      dockerfile: Dockerfile.kafka
     ports:
       - '9092:9092'
+      - '7071:7071'
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -23,3 +70,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_OPTS: "-javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=7071:/opt/jmx-exporter/kafka-jmx-config.yml"
+    volumes:
+      - ./monitoring/kafka-jmx-config.yml:/opt/jmx-exporter/kafka-jmx-config.yml

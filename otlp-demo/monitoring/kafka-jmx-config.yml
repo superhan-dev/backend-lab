@@ -1,0 +1,78 @@
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+rules:
+  # Kafka Broker Metrics
+  - pattern: kafka.server<type=(.+), name=(.+), clientId=(.+), topic=(.+), partition=(.*)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      clientId: "$3"
+      topic: "$4"
+      partition: "$5"
+
+  - pattern: kafka.server<type=(.+), name=(.+), clientId=(.+), brokerHost=(.+), brokerPort=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      clientId: "$3"
+      broker: "$4:$5"
+
+  - pattern: kafka.server<type=(.+), name=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+
+  - pattern: kafka.server<type=(.+), name=(.+)><>Count
+    name: kafka_server_$1_$2_total
+    type: COUNTER
+
+  # Kafka Controller Metrics
+  - pattern: kafka.controller<type=(.+), name=(.+)><>Value
+    name: kafka_controller_$1_$2
+    type: GAUGE
+
+  - pattern: kafka.controller<type=(.+), name=(.+)><>Count
+    name: kafka_controller_$1_$2_total
+    type: COUNTER
+
+  # Kafka Network Metrics
+  - pattern: kafka.network<type=(.+), name=(.+), request=(.+), error=(.+)><>Count
+    name: kafka_network_$1_$2_total
+    type: COUNTER
+    labels:
+      request: "$3"
+      error: "$4"
+
+  - pattern: kafka.network<type=(.+), name=(.+), request=(.+)><>Count
+    name: kafka_network_$1_$2_total
+    type: COUNTER
+    labels:
+      request: "$3"
+
+  - pattern: kafka.network<type=(.+), name=(.+), request=(.+)><>Value
+    name: kafka_network_$1_$2
+    type: GAUGE
+    labels:
+      request: "$3"
+
+  # Kafka Log Metrics
+  - pattern: kafka.log<type=(.+), name=(.+), topic=(.+), partition=(.+)><>Value
+    name: kafka_log_$1_$2
+    type: GAUGE
+    labels:
+      topic: "$3"
+      partition: "$4"
+
+  - pattern: kafka.log<type=(.+), name=(.+)><>Value
+    name: kafka_log_$1_$2
+    type: GAUGE
+
+  # Consumer Group Metrics
+  - pattern: kafka.server<type=(.+), name=(.+), groupId=(.+), topic=(.+), partition=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      groupId: "$3"
+      topic: "$4"
+      partition: "$5"
+

@@ -36,6 +36,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("io.micrometer:micrometer-registry-otlp")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-micrometer-metrics-test")
     testImplementation("org.springframework.boot:spring-boot-starter-opentelemetry-test")
