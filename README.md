@@ -25,7 +25,9 @@ logback 설정을 활용하여 api 호출시 traceId를 부여하면 모든 trac
 </configuration>
 ```
 
-## Kafka 모니터링 (JMX Exporter + Prometheus + Grafana)
+---
+
+# Kafka 모니터링 (JMX Exporter + Prometheus + Grafana)
 
 Kafka 브로커의 메트릭을 수집하고 시각화하기 위해 JMX Exporter, Prometheus, Grafana를 통합하였다.
 
@@ -68,9 +70,9 @@ Prometheus는 설정된 타겟에서 주기적으로 메트릭을 스크랩(pull
 ```yaml
 # prometheus.yml
 scrape_configs:
-  - job_name: 'kafka'
+  - job_name: "kafka"
     static_configs:
-      - targets: ['kafka:7071']  # JMX Exporter 엔드포인트
+      - targets: ["kafka:7071"] # JMX Exporter 엔드포인트
 ```
 
 #### 3. Grafana Init Container (대시보드 자동 프로비저닝)
@@ -82,7 +84,7 @@ grafana-init:
   image: curlimages/curl:latest
   depends_on:
     grafana-lgtm:
-      condition: service_healthy  # Grafana가 준비될 때까지 대기
+      condition: service_healthy # Grafana가 준비될 때까지 대기
   command:
     - |
       # 1. Prometheus 데이터소스 추가
@@ -95,18 +97,19 @@ grafana-init:
 ```
 
 **핵심 포인트:**
+
 - `depends_on` + `condition: service_healthy`: Grafana healthcheck가 통과한 후에만 실행
 - Grafana REST API를 사용해 런타임에 데이터소스/대시보드 등록
 - 컨테이너 실행 후 종료되는 일회성 작업 (init pattern)
 
 ### 서비스 포트
 
-| 서비스 | 포트 | 용도 |
-|--------|------|------|
+| 서비스       | 포트 | 용도                           |
+| ------------ | ---- | ------------------------------ |
 | Grafana-LGTM | 3000 | OpenTelemetry + Kafka 대시보드 |
-| Prometheus | 9090 | 메트릭 수집/쿼리 |
-| Kafka | 9092 | 브로커 |
-| JMX Exporter | 7071 | Kafka JMX 메트릭 |
+| Prometheus   | 9090 | 메트릭 수집/쿼리               |
+| Kafka        | 9092 | 브로커                         |
+| JMX Exporter | 7071 | Kafka JMX 메트릭               |
 
 ### 실행 방법
 
@@ -124,10 +127,10 @@ cd kafka-consumer-demo && ./gradlew bootRun
 
 ### 주요 Kafka 메트릭
 
-| 메트릭 | 설명 |
-|--------|------|
-| `kafka_server_brokertopicmetrics_messagesinpersec` | 초당 수신 메시지 수 |
-| `kafka_server_brokertopicmetrics_bytesinpersec` | 초당 수신 바이트 |
-| `kafka_server_brokertopicmetrics_bytesoutpersec` | 초당 송신 바이트 |
-| `kafka_controller_kafkacontroller_activecontrollercount` | 활성 컨트롤러 수 |
-| `kafka_log_log_size` | 토픽/파티션별 로그 크기 |
+| 메트릭                                                   | 설명                    |
+| -------------------------------------------------------- | ----------------------- |
+| `kafka_server_brokertopicmetrics_messagesinpersec`       | 초당 수신 메시지 수     |
+| `kafka_server_brokertopicmetrics_bytesinpersec`          | 초당 수신 바이트        |
+| `kafka_server_brokertopicmetrics_bytesoutpersec`         | 초당 송신 바이트        |
+| `kafka_controller_kafkacontroller_activecontrollercount` | 활성 컨트롤러 수        |
+| `kafka_log_log_size`                                     | 토픽/파티션별 로그 크기 |
